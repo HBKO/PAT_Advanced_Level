@@ -10,65 +10,81 @@ struct edge
     int cost;
 };
 
-const int MAX=1000000;
+const int MAX=1000005;
+const int MAX2=10005;
 const int INF=0x0fffffff;
+edge ML[MAX2];
+edge MD[MAX2];
+int N,M1,M2;
 
-struct edge G1[MAX];
-struct edge G2[MAX];
-int dist[MAX];
-int N,ML,MD;
+int dist[MAX2*2];
 
 
 int main()
 {
-    scanf("%d %d %d",&N,&ML,&MD);
-    //读取图数据
-    for(int i=0;i<ML;++i)
+    scanf("%d %d %d",&N,&M1,&M2);
+    for(int i=0;i<M1;++i)
     {
         int st,to,cost;
         scanf("%d %d %d",&st,&to,&cost);
         st--;to--;
-        G1[i].st=st;G1[i].to=to;G1[i].cost=cost;
+        ML[i].st=st;
+        ML[i].to=to;
+        ML[i].cost=cost;
     }
-    for(int i=0;i<MD;++i)
+    for(int i=0;i<M2;++i)
     {
         int st,to,cost;
         scanf("%d %d %d",&st,&to,&cost);
         st--;to--;
-        G2[i].st=to;G2[i].to=st;G2[i].cost=-cost;
+        cost=-cost;
+        MD[i].st=to;
+        MD[i].to=st;
+        MD[i].cost=cost;
     }
 
-    for(int i=0;i<N;++i) dist[i]=INF;
+    for(int i=0;i<N;++i)
+    {
+        dist[i]=INF;
+    }
+
     dist[0]=0;
+    //进行最短路径处理,从顶点出发到所有的点，复杂度为V*E,所以应该遍历更新所有的点
     for(int k=0;k<N;++k)
     {
-        //从i+1到i的距离为0
-        for(int i=0;i+1<N;++i)
+        //dist[i+1]>=dist[i],牛按照大小顺序排列
+        for(int i=0;(i+1)<N;++i)
         {
-            if(dist[i+1]!=INF)  dist[i]=min(dist[i],dist[i+1]);
+              if(dist[i+1]<INF)  dist[i]=min(dist[i],dist[i+1]);
+        }
+            
+        //ML的牛的最大距离
+        for(int i=0;i<M1;++i)
+        {
+            edge& e=ML[i];
+            if(dist[e.st]<INF)
+            {
+                dist[e.to]=min(dist[e.to],dist[e.st]+e.cost);
+            }
         }
 
-        //得到所有数据并进行处理
-        for(int i=0;i<ML;++i)
+        //MD的牛的最大距离
+        for(int i=0;i<M2;++i)
         {
-            edge &e=G1[i];
-            if(dist[e.st]!=INF) dist[e.to]=min(dist[e.to],dist[e.st]+e.cost);
+            edge& e=MD[i];
+            if(dist[e.st]<INF)
+            {
+                dist[e.to]=min(dist[e.to],dist[e.st]+e.cost);
+            }
         }
-        for(int i=0;i<MD;++i)
-        {
-            edge &e=G2[i];
-            if(dist[e.st]!=INF) dist[e.to]=min(dist[e.to],dist[e.st]+e.cost);
-        }
-
-    }   
-
+    }
     int res=dist[N-1];
     if(dist[0]<0)
     {
+        //不可行 
         res=-1;
-    }   
-    //没有到点N的最短距离（即没有到N的路径），所以可以随便摆 
-    else if(dist[N-1]==INF)
+    }
+    else if(res==INF)
     {
         res=-2;
     }
