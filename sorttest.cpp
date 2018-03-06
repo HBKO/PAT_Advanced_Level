@@ -14,6 +14,13 @@ int temp[10]={0};
 
 
 
+void exchange(int r,int l)
+{
+    int tmp=a[r];
+    a[r]=a[l];
+    a[l]=tmp;
+}
+
 //维护堆的情况
 void mainheap(int i)
 {
@@ -103,12 +110,41 @@ void mergesort(int l,int r)
 }
 
 
+void quicksort(int p,int r)
+{
+    int Partition(int p,int r);
+    if(p<r)
+    {
+        int q=Partition(p,r);
+        quicksort(p,q-1);
+        quicksort(q+1,r);
+    }
+}
+
+int Partition(int p,int r)
+{
+    int x=a[r];
+    int i=p-1;
+    for(int j=p;j<r;++j)
+    {
+        if (a[j]<=x)
+        {
+            i++;
+            exchange(a[i],a[j]);
+        }
+    }
+    exchange(a[r],a[i+1]);
+    return i+1;
+}
+
+
 int main()
 {
     //    insort();
     //mergesort(0,9);
 //    buildheap();
-    heapsort();
+//    heapsort();
+    quicksort(0,9);
     for(int i=0;i<10;++i)
         printf("%d ",a[i]);
     printf("\n");
